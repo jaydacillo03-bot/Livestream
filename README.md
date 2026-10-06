@@ -2,6 +2,20 @@
 
 Mosaic Studio is a native Windows desktop MVP for arranging local video feeds, previewing a selected webcam or video, and switching between a studio workspace and an audience-style feed selector.
 
+## macOS companion
+
+The `Mac` folder contains a separate native SwiftUI companion for macOS 13 and later. Open `Mac/MosaicStudioMac.xcodeproj` in Xcode, select the **MosaicStudioMac** scheme, and run it. Grant camera and microphone access when macOS prompts. Install FFmpeg with `brew install ffmpeg` and configure an RTMP destination before broadcasting. The Mac app stores stream keys in the macOS Keychain rather than sharing Windows' DPAPI-encrypted settings; studio layouts are stored separately in `~/Library/Application Support/MosaicStudioMac`. FFmpeg receives a destination's stream key as a process argument while that broadcast is running.
+
+The Mac companion includes camera and local-video feeds, a local audience preview, optional microphone audio, and simultaneous RTMP output. Camera/audio capture indices are matched against FFmpeg's AVFoundation device list. The Watch view is local only; screen capture and remote/public viewer hosting are not included.
+
+## Build installers
+
+Installer outputs are written to the ignored `artifacts/installers` folder. Each installer must be built on its target operating system.
+
+**Windows:** Install Inno Setup 6, then run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Packaging\Windows\build-installer.ps1` from the repository root. The script publishes a self-contained x64 app and creates `MosaicStudio-Windows-Setup-1.0.0.exe`. The installer is per-user and does not delete studio settings when uninstalled. It is unsigned, so Windows SmartScreen may show a warning. FFmpeg is a separate prerequisite; install it with `winget install --id BtbN.FFmpeg.LGPL.8.1 --exact`.
+
+**macOS:** On a Mac with Xcode and the command-line tools installed, run `bash Mac/build-installer.sh`. This builds the SwiftUI app and creates both `MosaicStudio-macOS-1.0.0.pkg` (installer package) and `MosaicStudio-macOS-1.0.0.dmg` (drag-to-Applications disk image). Install FFmpeg separately with `brew install ffmpeg`. For public distribution, sign the app and installer with Apple Developer ID certificates and notarize them; unsigned local builds are intended for testing and may trigger macOS security warnings.
+
 ## Run
 
 Install the .NET 9 SDK and Windows Desktop Runtime, then run:
